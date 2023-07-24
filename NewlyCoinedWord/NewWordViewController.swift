@@ -8,7 +8,7 @@
 import UIKit
 
 class NewWordViewController: UIViewController, UITextFieldDelegate {
-
+    
     @IBOutlet var searchTextField: UITextField!
     @IBOutlet var searchButton: UIButton!
     @IBOutlet var searchContainerView: UIView!
@@ -26,26 +26,27 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        searchTextField.delegate = self
+        //        searchTextField.delegate = self
         searchTextField.returnKeyType = .search
         
         designSearchContainer()
         designSearchButton()
         designSearchTextField()
         designResultLabel()
-    
+        
         
         for i in 0...buttonCollection.count - 1 {
-//            designTopLabel(outlet: topLabelCollection[i])
+            //            designTopLabel(outlet: topLabelCollection[i])
             buttonCollection[i].setTitle(Array(labelDictionary)[i].key, for: .normal)
             designTopButton(outlet: buttonCollection[i])
-            
+            buttonCollection[i].tag = i
         }
         
     }
     
     @IBAction func topButtonClicked(_ sender: UIButton) {
-        searchAction(searchText: sender.titleLabel?.text)
+        print(sender.tag, "클릭")
+        searchAction(searchText: Array(labelDictionary)[sender.tag].key)
     }
     
     @IBAction func tabGestureTabbed(_ sender: UITapGestureRecognizer) {
@@ -57,30 +58,48 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
     }
     
     // TextField Delegate 룰 사용해서 Return 버튼 동작
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //delegate method
-//        searchAction()
-//       return true
-//    }
+    //    func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //delegate method
+    //        searchAction()
+    //       return true
+    //    }
     
     @IBAction func textfieldReturnClicked(_ sender: UITextField) {
         searchAction(searchText: sender.text)
     }
     
     func searchAction(searchText: String?) {
-        if searchText == nil {
-            return
-        }
         
-        for word in labelDictionary {
-            if word.key == searchText {
-                resultLabel.text = word.value
-                break
-            } else {
-                resultLabel.text = "검색결과가 없습니다"
+        if let searchText {
+            if searchText.count == 0 {
+                showAlert(title: "검색어", msg: "검색어를 입력해주세요.")
+                return
             }
+            
+            if searchText.count < 2 {
+                showAlert(title: "검색어", msg: "검색어를 두글자이상 입력해주세요.")
+                return
+            }
+            
+            for i in 0...labelDictionary.count - 1 {
+                if Array(labelDictionary)[i].key == searchText {
+                    resultLabel.text = searchText
+                    buttonCollection[i].isHidden = true
+                } else {
+                    buttonCollection[i].isHidden = false
+                }
+            }
+            
+//            for word in labelDictionary {
+//                if word.key == searchText {
+//                    resultLabel.text = word.value
+//                    break
+//                } else {
+//                    resultLabel.text = "검색결과가 없습니다"
+//                }
+//            }
+            searchTextField.text = ""
+            view.endEditing(true)
         }
-        searchTextField.text = nil
-        view.endEditing(true)
     }
     
     func designSearchContainer() {
@@ -94,7 +113,7 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
         var config = UIButton.Configuration.filled()        // apple system button
         config.title = ""
         config.image = UIImage(systemName: "magnifyingglass")
-//        config.cornerStyle = .dynamic
+        //        config.cornerStyle = .dynamic
         config.baseForegroundColor = .white
         config.baseBackgroundColor = .black
         config.imagePadding = 8
@@ -126,12 +145,21 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
         config.baseBackgroundColor = .white
         btn.configuration = config
     }
-
+    
     func designResultLabel() {
         resultLabel.text = "검색해주세요"
         resultLabel.font = .systemFont(ofSize: 18)
         resultLabel.textAlignment = .center
         resultLabel.numberOfLines = 3
         resultLabel.textColor = .black
+    }
+    
+    func showAlert(title: String, msg: String) {
+        let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+        //        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        let ok = UIAlertAction(title: "확인", style: .default)
+        //        alert.addAction(cancel)
+        alert.addAction(ok)
+        present(alert, animated: true)
     }
 }
