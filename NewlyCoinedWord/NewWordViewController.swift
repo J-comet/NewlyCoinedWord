@@ -16,13 +16,21 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var buttonCollection: [UIButton]!
     @IBOutlet var resultLabel: UILabel!
     
-    let labelDictionary = [
-        "쫌쫌따리": "아주 조금씩 적고 하찮은 양을 모으는 모습",
-        "억텐": "억지 텐션",
-        "스불재": "스스로 불러온 재앙",
-        "좋댓구알": "좋아요,댓글,구독,알림설정",
-        "점메추": "점심메뉴추천"
-    ]
+//    let labelDictionary = [
+//        "쫌쫌따리": "아주 조금씩 적고 하찮은 양을 모으는 모습",
+//        "억텐": "억지 텐션",
+//        "스불재": "스스로 불러온 재앙",
+//        "좋댓구알": "좋아요,댓글,구독,알림설정",
+//        "점메추": "점심메뉴추천"
+//    ]
+    
+    enum NewWord: String, CaseIterable {
+        case 쫌쫌따리 = "아주 조금씩 적고 하찮은 양을 모으는 모습"
+        case 억텐 = "억지 텐션"
+        case 스불재 = "스스로 불러온 재앙"
+        case 좋댓구알 = "아좋아요,댓글,구독,알림설정"
+        case 점메추 = "점심메뉴추천"
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +45,8 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
         
         for i in 0...buttonCollection.count - 1 {
             //            designTopLabel(outlet: topLabelCollection[i])
-            buttonCollection[i].setTitle(Array(labelDictionary)[i].key, for: .normal)
+//            buttonCollection[i].setTitle(Array(labelDictionary)[i].key, for: .normal)
+            buttonCollection[i].setTitle(String(describing: NewWord.allCases[i]), for: .normal)
             designTopButton(outlet: buttonCollection[i])
             buttonCollection[i].tag = i
         }
@@ -46,7 +55,8 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func topButtonClicked(_ sender: UIButton) {
         print(sender.tag, "클릭")
-        searchAction(searchText: Array(labelDictionary)[sender.tag].key)
+//        searchAction(searchText: Array(labelDictionary)[sender.tag].key)
+        searchAction(searchText: String(describing: NewWord.allCases[sender.tag]))
     }
     
     @IBAction func tabGestureTabbed(_ sender: UITapGestureRecognizer) {
@@ -68,7 +78,6 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
     }
     
     func searchAction(searchText: String?) {
-        
         if let searchText {
             if searchText.count == 0 {
                 showAlert(title: "검색어", msg: "검색어를 입력해주세요.")
@@ -80,23 +89,24 @@ class NewWordViewController: UIViewController, UITextFieldDelegate {
                 return
             }
             
-            for i in 0...labelDictionary.count - 1 {
-                if Array(labelDictionary)[i].key == searchText {
-                    resultLabel.text = searchText
+//            for i in 0...labelDictionary.count - 1 {
+//                if Array(labelDictionary)[i].key == searchText {
+//                    resultLabel.text = searchText
+//                    buttonCollection[i].isHidden = true
+//                } else {
+//                    buttonCollection[i].isHidden = false
+//                }
+//            }
+            
+            for i in 0...NewWord.allCases.count - 1 {
+                if String(describing: NewWord.allCases[i]) == searchText {
+                    resultLabel.text = NewWord.allCases[i].rawValue
                     buttonCollection[i].isHidden = true
                 } else {
                     buttonCollection[i].isHidden = false
                 }
             }
             
-//            for word in labelDictionary {
-//                if word.key == searchText {
-//                    resultLabel.text = word.value
-//                    break
-//                } else {
-//                    resultLabel.text = "검색결과가 없습니다"
-//                }
-//            }
             searchTextField.text = ""
             view.endEditing(true)
         }
